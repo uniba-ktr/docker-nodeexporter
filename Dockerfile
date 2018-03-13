@@ -18,37 +18,24 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG VCS_URL
 
-ADD https://github.com/prometheus/prometheus/releases/download/v${VERSION}/prometheus-${VERSION}.linux-${PROMETHEUS_ARCH}.tar.gz /tmp/prometheus.tar.gz
+ADD https://github.com/prometheus/node_exporter/releases/download/v${VERSION}/node_exporter-${VERSION}.linux-${PROMETHEUS_ARCH}.tar.gz /tmp/node_exporter.tar.gz
 
-RUN cd /tmp && tar xzf /tmp/prometheus.tar.gz && \
-    mv prometheus-* prometheus && \
-    mkdir -p /etc/prometheus /usr/share/prometheus /prometheus && \
-    cd /tmp/prometheus && \
-    cp prometheus /bin/prometheus && \
-    cp promtool /bin/promtool && \
-    cp prometheus.yml /etc/prometheus/prometheus.yml && \
-    cp -r console_libraries/ /usr/share/prometheus/console_libraries/ && \
-    cp -r consoles/ /usr/share/prometheus/consoles/ && \
+RUN cd /tmp && tar xzf /tmp/node_exporter.tar.gz && \
+    mv node_exporter-* node_exporter && \
+    cp node_exporter/node_exporter /bin/node_exporter && \
     cd / && \
-    ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ && \
-    chown -R nobody:nogroup etc/prometheus /prometheus
-
+    rm -rf /tmp
 
 USER       nobody
-EXPOSE     9090
-VOLUME     [ "/prometheus" ]
-WORKDIR    /prometheus
-ENTRYPOINT [ "/bin/prometheus" ]
-CMD        [ "--config.file=/etc/prometheus/prometheus.yml", \
-             "--storage.tsdb.path=/prometheus", \
-             "--web.console.libraries=/usr/share/prometheus/console_libraries", \
-             "--web.console.templates=/usr/share/prometheus/consoles" ]
+EXPOSE     9100
 
-LABEL de.uniba.ktr.prometheus.version=$VERSION \
-      de.uniba.ktr.prometheus.name="Prometheus" \
-      de.uniba.ktr.prometheus.docker.cmd="docker run --publish=9090:9090 --detach=true --name=prometheus unibaktr/prometheus" \
-      de.uniba.ktr.prometheus.vendor="Marcel Grossmann" \
-      de.uniba.ktr.prometheus.architecture=$ARCH \
-      de.uniba.ktr.prometheus.vcs-ref=$VCS_REF \
-      de.uniba.ktr.prometheus.vcs-url=$VCS_URL \
-      de.uniba.ktr.prometheus.build-date=$BUILD_DATE
+ENTRYPOINT [ "/bin/node_exporter" ]
+
+LABEL de.uniba.ktr.node-exporter.version=$VERSION \
+      de.uniba.ktr.node-exporter.name="Prometheus" \
+      de.uniba.ktr.node-exporter.docker.cmd="docker run --publish=9100:9100 --detach=true --name=nodeexporter --net=\"host\" --pid=\"host\" unibaktr/nodeexporter" \
+      de.uniba.ktr.node-exporter.vendor="Marcel Grossmann" \
+      de.uniba.ktr.node-exporter.architecture=$ARCH \
+      de.uniba.ktr.node-exporter.vcs-ref=$VCS_REF \
+      de.uniba.ktr.node-exporter.vcs-url=$VCS_URL \
+      de.uniba.ktr.node-exporter.build-date=$BUILD_DATE
