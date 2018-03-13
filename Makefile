@@ -21,7 +21,7 @@ $(ARCHITECTURES):
 			--build-arg IMAGE_TARGET=$@/$(IMAGE_TARGET) \
 			--build-arg QEMU=$(strip $(call qemuarch,$@)) \
 			--build-arg ARCH=$@ \
-			--build-arg PROMETHEUS_ARCH=$(strip $(call prometheusarch,$@)) \
+			--build-arg NODEEXPORTER_ARCH=$(strip $(call nodeexporterarch,$@)) \
 			--build-arg BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 			--build-arg VCS_REF=$(shell git rev-parse --short HEAD) \
 			--build-arg VCS_URL=$(shell git config --get remote.origin.url) \
@@ -49,7 +49,7 @@ define qemuarch
 	$(shell echo $(1) | sed -e "s|arm32.*|arm|g" -e "s|arm64.*|aarch64|g" -e "s|amd64|x86_64|g")
 endef
 # Convert GOARCH to naming scheme of https://gist.github.com/asukakenji/f15ba7e588ac42795f421b48b8aede63
-define prometheusarch
+define nodeexporterarch
 	$(shell echo $(1) | sed -e "s|arm32v5|armv5|g" -e "s|arm32v6|armv6|g" -e "s|arm32v7|armv7|g" -e "s|arm64.*|arm64|g" -e "s|i386|386|g")
 endef
 # Convert Docker manifest entries according to https://docs.docker.com/registry/spec/manifest-v2-2/#manifest-list-field-descriptions
