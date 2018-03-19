@@ -58,6 +58,7 @@ jobs:
           command: make ARCHITECTURES=arm64v8 push
   manifest:
     <<: *defaults
+    steps:
       - checkout
       - run: make manifest
   badge:
