@@ -29,7 +29,9 @@ RUN apk update && \
 USER       nobody
 EXPOSE     9100
 
-ENTRYPOINT [ "/bin/node_exporter" ]
+COPY config /etc/node_exporter
+ENTRYPOINT [ "/etc/node_exporter/docker-entrypoint.sh" ]
+CMD [ "/bin/node_exporter" ]
 
 LABEL de.uniba.ktr.node-exporter.version=$VERSION \
       de.uniba.ktr.node-exporter.name="Node exporter" \
