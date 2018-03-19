@@ -18,9 +18,8 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG VCS_URL
 
-RUN apk update && \
-    apk add curl && \
-    curl -s -L https://github.com/prometheus/node_exporter/releases/download/v${VERSION}/node_exporter-${VERSION}.linux-${NODEEXPORTER_ARCH}.tar.gz \
+RUN apk add -U --no-cache curl && \
+    curl -sL https://github.com/prometheus/node_exporter/releases/download/v${VERSION}/node_exporter-${VERSION}.linux-${NODEEXPORTER_ARCH}.tar.gz \
     | tar -xzf - && \
     cd node_exporter-* && \
     cp node_exporter /bin/node_exporter && \
@@ -32,11 +31,10 @@ EXPOSE     9100
 COPY config /etc/node_exporter
 RUN chmod +x /etc/node_exporter/docker-entrypoint.sh
 ENTRYPOINT [ "/etc/node_exporter/docker-entrypoint.sh" ]
-CMD [ "/bin/node_exporter" ]
 
 LABEL de.uniba.ktr.node-exporter.version=$VERSION \
       de.uniba.ktr.node-exporter.name="Node exporter" \
-      de.uniba.ktr.node-exporter.docker.cmd="docker run --publish=9100:9100 --detach=true --name=nodeexporter --net=\"host\" --pid=\"host\" unibaktr/nodeexporter" \
+      de.uniba.ktr.node-exporter.docker.cmd="docker run --publish=9100:9100 --detach=true --name=nodeexporter --net=\"host\" --pid=\"host\" -v /etc/hostname:/etc/nodename:ro unibaktr/nodeexporter" \
       de.uniba.ktr.node-exporter.vendor="Marcel Grossmann" \
       de.uniba.ktr.node-exporter.architecture=$ARCH \
       de.uniba.ktr.node-exporter.vcs-ref=$VCS_REF \
