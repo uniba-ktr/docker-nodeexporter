@@ -26,10 +26,11 @@ RUN apk update && \
     cp node_exporter /bin/node_exporter && \
     rm -r /node_exporter-*
 
-USER       nobody
+USER       root
 EXPOSE     9100
 
 COPY config /etc/node_exporter
+RUN chmod +x /etc/node_exporter/docker-entrypoint.sh
 ENTRYPOINT [ "/etc/node_exporter/docker-entrypoint.sh" ]
 CMD [ "/bin/node_exporter" ]
 
