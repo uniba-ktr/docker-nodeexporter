@@ -1,7 +1,6 @@
 PLATFORMS = linux/amd64,linux/i386,linux/arm64,linux/arm/v7,linux/arm/v6,linux/ppc64le,linux/s390x
 VERSION = $(shell cat VERSION)
-BINFMT = a7996909642ee92942dcd6cff44b9b95f08dad64
-
+builder = xbuilder
 comma := ,
 
 ifeq ($(REPO),)
@@ -18,9 +17,9 @@ endif
 all: init build clean
 
 init: clean
-	@docker run --rm --privileged docker/binfmt:$(BINFMT)
-	@docker buildx create --name nodeexporter_builder
-	@docker buildx use nodeexporter_builder
+	@docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+	@docker context create $(builder)
+	@docker buildx create $(builder) --name $(builder) --driver docker-container --use
 	@docker buildx inspect --bootstrap
 
 build:
@@ -37,7 +36,7 @@ build:
 	@docker logout
 
 clean:
-	@docker buildx rm nodeexporter_builder | true
+	@docker context rm $(builder) | true
 
 # To test the "buildx" locally
 build_local: init
