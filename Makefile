@@ -14,7 +14,7 @@ endif
 
 .PHONY: all init build clean
 
-all: init build clean
+all: init build_local clean
 
 init: clean
 	@docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
@@ -39,7 +39,7 @@ clean:
 	@docker context rm $(builder) | true
 
 # To test the "buildx" locally
-build_local: init
+build_local:
 	@docker buildx build \
 			--build-arg BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 			--build-arg VCS_REF=$(shell git rev-parse --short HEAD) \
