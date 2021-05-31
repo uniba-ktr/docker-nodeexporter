@@ -1,13 +1,14 @@
 FROM alpine
-ARG TARGETPLATFORM=amd64
 ARG VERSION=0.17.0
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VCS_URL
+ARG TARGETARCH
+ARG TARGETVARIANT
 
-RUN apk add -U --no-cache curl && \
-    curl -sL https://github.com/prometheus/node_exporter/releases/download/v${VERSION}/node_exporter-${VERSION}.linux-$(echo ${TARGETPLATFORM} | sed -e "s|arm32v5|armv5|g" -e "s|arm32v6|armv6|g" -e "s|arm32v7|armv7|g" -e "s|arm64.*|arm64|g" -e "s|i386|386|g").tar.gz \
-    | tar -xzf - && \
+ADD https://github.com/prometheus/node_exporter/releases/download/v${VERSION}/node_exporter-${VERSION}.linux-${TARGETARCH}${TARGETVARIANT}.tar.gz /node_exporter-${VERSION}.linux-${TARGETARCH}${TARGETVARIANT}.tar.gz
+
+RUN tar xzf /node_exporter-${VERSION}.linux-${TARGETARCH}${TARGETVARIANT}.tar.gz && \
     cd node_exporter-* && \
     cp node_exporter /bin/node_exporter && \
     rm -r /node_exporter-*
